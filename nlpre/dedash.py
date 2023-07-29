@@ -3,6 +3,7 @@ import nlpre
 import spacy
 from spacy.matcher import Matcher
 from spacy.tokens import Token
+from spacy.language import Language
 
 
 class dedash:
@@ -18,27 +19,31 @@ class dedash:
     def __init__(self):
         # Build an empty tokenizer
         self.nlp = spacy.blank("en")
-
+        
         # Add the custom pipe
-        parser = dedash_spaCy(self.nlp)
-        self.nlp.add_pipe(parser)
+        self.nlp.add_pipe('dedash_spaCy')
 
     def __call__(self, text):
         return self.nlp(text).text
 
 
-class dedash_spaCy:
+@Language.factory('dedash_spaCy')
+def dedash_spaCy(nlp: Language, name: str):
+    return DedashComponent(nlp) 
+
+
+class DedashComponent:
 
     name = "identify_dedash_tokens"
 
-    def __init__(self, nlp):
+    def __init__(self, nlp: Language):
 
         # Match to a word split with a dash. Like ex- ample.
-        pattern = [
+        pattern = [[
             {"TEXT": {"REGEX": r"^[a-zA-Z]+[\-]$"}},
             {"IS_SPACE": True, "OP": "*"},
             {"TEXT": {"REGEX": "^[a-zA-Z]+$"}},
-        ]
+        ]]
 
         self.blank_nlp = spacy.blank("en")
 
@@ -46,16 +51,16 @@ class dedash_spaCy:
         Token.set_extension("merge_dash", default=False, force=True)
 
         self.matcher = Matcher(nlp.vocab)
-        self.matcher.add("dedash", None, pattern)
+        self.matcher.add("dedash", pattern)
 
         self.load_vocab()
 
     def load_vocab(self):
         # Load a set of english words
-        f_wordlist = nlpre.dictionary.wordlist_english
+        from nlpre.dictionary import wordlist_english
         self.vocab = set()
 
-        with open(f_wordlist) as FIN:
+        with open(wordlist_english, 'r') as FIN:
             for word in FIN:
                 self.vocab.add(word.strip().lower())
 
@@ -89,8 +94,9 @@ class dedash_spaCy:
             return doc
 
         # Merge the tokens together
-        for span in spans:
-            span.merge()
+        with doc.retokenize() as retokenizer:
+            for span in spans:
+                retokenizer.merge(span)
 
         # Build a new document after merging
         text_new = []

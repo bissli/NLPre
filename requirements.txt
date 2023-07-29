@@ -6,7 +6,7 @@
 # Needed for testing
 coverage
 flake8
-nose
+nose-py3
 Fabric3
 black
 tox

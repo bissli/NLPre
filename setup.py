@@ -23,12 +23,7 @@ setuptools.setup(
         "unidecode",
         "pyparsing",
         "flashtext",
-        # See https://github.com/explosion/spaCy/issues/1099 for dataset
-        # Fix the minor version so model doesn't change
-        "spacy==2.1.0",
-        # Fix the version of mysqlclient due to windows problems
-        # "mysqlclient==1.3.12",
-        # For parallel processing
+        "spacy==3.6.0",
         "joblib",
     ],
     description="Natural Language Preprocessing (NLPre) utilities.",
@@ -68,5 +63,5 @@ setuptools.setup(
     # What does your project relate to?
     keywords="NLP",
     test_suite="nose.collector",
-    tests_require=["nose"],
+    tests_require=["nose-py3"],
 )
