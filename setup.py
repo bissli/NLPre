@@ -23,7 +23,7 @@ setuptools.setup(
         "unidecode",
         "pyparsing",
         "flashtext",
-        "spacy==3.6.0",
+        "spacy",
         "joblib",
     ],
     description="Natural Language Preprocessing (NLPre) utilities.",

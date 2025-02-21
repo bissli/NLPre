@@ -33,7 +33,7 @@ try:
     nlp = spacy.load('en_core_web_sm', exclude=['ner'])
 except ModuleNotFoundError:
     # Hard code the model into NLPre
-    download('en_core_web_sm-3.6.0', '--direct')
+    download('en_core_web_sm', '--direct')
     nlp = spacy.load('en_core_web_sm', exclude=['ner'])
 
 nlp.add_pipe('dash_merger', first=True)  # add it right after the tokenizer
